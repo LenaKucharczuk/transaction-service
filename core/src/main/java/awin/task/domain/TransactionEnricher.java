@@ -6,13 +6,13 @@ import java.util.List;
 
 public class TransactionEnricher {
 
-    public List<EnrichedTransaction> enrichWithTransactionCost(List<Transaction> transactions) {
+    public List<EnrichedTransaction> enrichWithTransactionCosts(List<Transaction> transactions) {
         return transactions.stream()
-            .map(TransactionEnricher::enrich)
+            .map(TransactionEnricher::sumProductCosts)
             .toList();
     }
 
-    private static EnrichedTransaction enrich(Transaction transaction) {
+    private static EnrichedTransaction sumProductCosts(Transaction transaction) {
         BigDecimal cost = transaction.products()
             .stream()
             .map(Product::cost)

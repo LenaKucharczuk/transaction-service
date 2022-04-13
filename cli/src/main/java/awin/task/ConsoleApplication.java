@@ -24,7 +24,7 @@ public class ConsoleApplication implements CommandLineRunner {
     @Override
     public void run(String... args) {
         List<EnrichedTransaction> transactions = new TransactionEnricher()
-            .enrichWithTransactionCost(transactionRepository.getAll());
+            .enrichWithTransactionCosts(transactionRepository.getAll());
         System.out.println(transactions);
     }
 }

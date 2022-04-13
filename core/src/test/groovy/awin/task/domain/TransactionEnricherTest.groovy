@@ -1,6 +1,5 @@
 package awin.task.domain
 
-
 import spock.lang.Specification
 
 import static awin.task.domain.TransactionEnricher.EnrichedTransaction
@@ -22,7 +21,7 @@ class TransactionEnricherTest extends Specification {
             ]).build()
 
         when:
-        def enrichedTransactions = transactionService.enrichWithTransactionCost([first, second])
+        def enrichedTransactions = transactionService.enrichWithTransactionCosts([first, second])
 
         then:
         enrichedTransactions == [
@@ -33,10 +32,11 @@ class TransactionEnricherTest extends Specification {
 
     def "should throw exception when provided transaction with empty products"() {
         given:
-        def transaction = new TransactionBuilder().withProducts([]).build()
+        def invalid = new TransactionBuilder().withProducts([]).build()
+        def valid = new TransactionBuilder().build()
 
         when:
-        transactionService.enrichWithTransactionCost([transaction])
+        transactionService.enrichWithTransactionCosts([invalid, valid])
 
         then:
         def exception = thrown(IllegalArgumentException)
@@ -48,7 +48,7 @@ class TransactionEnricherTest extends Specification {
         List<Transaction> empty = []
 
         when:
-        def enrichedTransactions = transactionService.enrichWithTransactionCost(empty)
+        def enrichedTransactions = transactionService.enrichWithTransactionCosts(empty)
 
         then:
         enrichedTransactions == []

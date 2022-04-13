@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity
 import spock.lang.Specification
 
 import static awin.task.domain.TransactionEnricher.EnrichedTransaction
-import static awin.task.domain.TransactionEnricher.Transaction
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TransactionControllerIntegrationTest extends Specification {
@@ -23,19 +22,27 @@ class TransactionControllerIntegrationTest extends Specification {
 
     def "should get enriched transactions"() {
         given:
-        def first =
-            new TransactionBuilder().withProducts([new ProductBuilder().withCost("10.28").build()]).build()
-        def second =
-            new TransactionBuilder().withProducts([new ProductBuilder().withCost("10.28").build()]).build()
+        def first = new TransactionBuilder().withProducts([
+            new ProductBuilder().withCost("10.28").build()
+        ]).build()
+        def second = new TransactionBuilder().withProducts([
+            new ProductBuilder().withCost("60.28").build(),
+            new ProductBuilder().withCost("30.28").build()
+        ]).build()
 
         when:
-        ResponseEntity<List<EnrichedTransaction>> response = postTransactions(first, second)
+        ResponseEntity<List<EnrichedTransaction>> response = httpClient.exchange(
+            "/enrich/transactions",
+            HttpMethod.POST,
+            new HttpEntity<>([first, second]),
+            new ParameterizedTypeReference<List<EnrichedTransaction>>() {}
+        )
 
         then:
         response.statusCode == HttpStatus.OK
         response.body == [
             new EnrichedTransaction(first, new BigDecimal("10.28")),
-            new EnrichedTransaction(second, new BigDecimal("10.28"))
+            new EnrichedTransaction(second, new BigDecimal("90.56"))
         ]
     }
 
@@ -71,14 +78,5 @@ class TransactionControllerIntegrationTest extends Specification {
         then:
         response.statusCode == HttpStatus.BAD_REQUEST
         response.body == "Products cannot be empty for transaction"
-    }
-
-    ResponseEntity<List<EnrichedTransaction>> postTransactions(Transaction... transactions) {
-        return httpClient.exchange(
-            "/enrich/transactions",
-            HttpMethod.POST,
-            new HttpEntity<>(transactions),
-            new ParameterizedTypeReference<List<EnrichedTransaction>>() {}
-        )
     }
 }

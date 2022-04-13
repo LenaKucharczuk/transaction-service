@@ -25,12 +25,12 @@ public class TransactionController {
 
     @PostMapping("/transactions")
     List<EnrichedTransaction> enrichedTransactions(@RequestBody List<Transaction> transactions) {
-        return transactionEnricher.enrichWithTransactionCost(transactions);
+        return transactionEnricher.enrichWithTransactionCosts(transactions);
     }
 
     @PostMapping("/transaction")
     EnrichedTransaction enrichedTransaction(@RequestBody Transaction transaction) {
-        return transactionEnricher.enrichWithTransactionCost(List.of(transaction))
+        return transactionEnricher.enrichWithTransactionCosts(List.of(transaction))
             .get(0);
     }
 
