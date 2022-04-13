@@ -2,7 +2,8 @@
 
 ### Requirements
 
-- Java 17
+- Java 17 (when working with multiple jdks, [jenv](https://developer.bring.com/blog/configuring-jenv-the-right-way/) can
+  be used)
 - Docker
 
 ### CLI Application
