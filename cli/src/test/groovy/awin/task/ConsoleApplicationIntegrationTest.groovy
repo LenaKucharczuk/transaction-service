@@ -7,15 +7,12 @@ import java.time.LocalDate
 import java.time.Month
 
 class ConsoleApplicationIntegrationTest extends Specification {
+
     def "should print transactions to standard output"() {
-        given: "create console application jar"
-        Runtime.getRuntime().exec("../mvnw package -DskipTests").waitFor()
+        when: "run console application"
+        def output = captureStandardOutputOf { ConsoleApplication.main() }
 
-        when: "execute jar"
-        Process process = Runtime.getRuntime().exec("java -jar target/cli-1.0-SNAPSHOT.jar")
-
-        then: "hardcoded data on output"
-        def output = new String(process.getInputStream().readAllBytes())
+        then: "standard output contains hardcoded transactions"
         output.contains(
             new TransactionEnricher.Transaction(
                 0L,
@@ -36,5 +33,15 @@ class ConsoleApplicationIntegrationTest extends Specification {
                 )
             ).toString()
         )
+    }
+
+    static String captureStandardOutputOf(Closure function) {
+        ByteArrayOutputStream captured = new ByteArrayOutputStream()
+        PrintStream old = System.out
+        System.setOut(new PrintStream(captured))
+        function()
+        System.out.flush()
+        System.setOut(old)
+        return captured.toString()
     }
 }
